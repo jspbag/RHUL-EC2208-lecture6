@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Autocovariance</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="index_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="index_files/reveal.js-3.3.0.1/css/theme/solarized.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+    <link rel="stylesheet" href="mystyle.css"/>
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+    <script src="index_files/header-attrs-2.9/header-attrs.js"></script>
+    <link href="index_files/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="index_files/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+
+<section class="slide level2">
+
+<section>
+<h1>
+Autocovariance
+</h1>
+<p>Based on Stock and Watson, ch. 15</p>
+<p><br></p>
+<h2>
+<a href="mailto:jesper.bagger@rhul.ac.uk">Jesper Bagger</a>
+</h2>
+<h3>
+EC2208 | Royal Holloway | 2021/22
+</h3>
+</section>
+<!-- # Prediction -->
+<!-- ## Prediction -->
+<!-- - Cross section data example w/ test scores and class size -->
+<!-- $$Score_i = \beta_0 + \beta_1 STR_i + u_i; \quad i=1,2,\ldots,n$$ -->
+<!-- - OLS is consistent estiamtor of Best Linear Predictor: -->
+<!-- $$\hat{Score} = \hat{\beta}_0 + \hat{\beta}_1 STR$$ -->
+<!-- - Use regression to predict test scores from class sizes -->
+<!-- ## Prediction -->
+<!-- $$Score_i = \underset{\hat{Score}_i}{\underbrace{698.93 -2.28 STR_i}} + -->
+<!-- \hat{u}_i; \quad i = 1,\ldots,n$$ ```{r echo=FALSE, error=FALSE, warning=FALSE, -->
+<!-- out.width = "70%"} lm <- lm(Score ~ STR, data = CASchools) # Scatter plot of -->
+<!-- Score against STR plot(CASchools$STR,CASchools$Score, col = "blue", # Color of -->
+<!-- data points xlab = "Student-teacher ratio",  # Label on x-axis ylab = "Test -->
+<!-- score",   # Label on y-axis xlim = c(10, 30),  # Range of x-axis (from 10 to 30) -->
+<!-- ylim = c(600, 720)) # Range of y-axis (from 600 to 720) # Add sample regression -->
+<!-- function to the plot abline(lm, col = "red", # Make the line red lwd = 3) # Set -->
+<!-- linewidth to 3 ``` -->
+<!-- ## Prediction for $STR = 25$ -->
+<!-- $$\hat{Score}(STR = 25) = 698.93 -2.28 \times 25 = 641.94$$ ```{r echo=FALSE, -->
+<!-- error=FALSE, warning=FALSE, out.width = "70%"} pred.25 <- predict(lm, newdata = -->
+<!-- data.frame("STR" = 25)) # Scatter plot of Score against STR -->
+<!-- plot(CASchools$STR,CASchools$Score, col = "blue", # Color of data points xlab = -->
+<!-- "Student-teacher ratio",  # Label on x-axis ylab = "Test score",   # Label on -->
+<!-- y-axis xlim = c(10, 30),  # Range of x-axis (from 10 to 30) ylim = c(600, 720)) -->
+<!-- # Range of y-axis (from 600 to 720) # Add sample regression function to the plot -->
+<!-- abline(lm, col = "red", # Make the line red lwd = 3) # Set linewidth to 3 # Add -->
+<!-- prediction for STR = 25 to the plot points(25,pred.25, col = "green") # Make the -->
+<!-- point green ``` -->
+<!-- ## Prediction in R -->
+<!-- ```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"} lm <- lm(Score ~ -->
+<!-- STR, data = CASchools) lm predict(lm, newdata = data.frame("STR" = 25)) ``` -->
+<!-- ## Prediction in R -->
+<!-- ```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"} predict(lm, -->
+<!-- newdata = data.frame("STR" = 20)) predict(lm, newdata = data.frame("STR" = 30)) -->
+<!-- ``` -->
+</section>
+<section>
+<section id="time-series-data" class="title-slide slide level1">
+<h1>Time series data</h1>
+
+</section>
+<section id="time-series-data-1" class="slide level2">
+<h2>Time series data</h2>
+<ul>
+<li><p>Time series data is data collected for a single entity at multiple points in time</p>
+<ul>
+<li>Profits of a particular firm</li>
+<li>A country’s quarterly GDP</li>
+<li>A region’s monthly unemployment rate</li>
+<li>Daily Covid-19 infections</li>
+</ul></li>
+<li><p>Univariate series data on <span class="math inline">\(Y\)</span>: <span class="math inline">\(\{Y_t;t=1,2,\ldots,T\}\)</span></p></li>
+<li><p>Time series data can be used for causal analysis (but now, dynamic) and prediction (now called forecasting)</p></li>
+</ul>
+</section>
+<section id="us-quarterly-gdp" class="slide level2">
+<h2>US quarterly GDP</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load US macroeconomic data</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>usmac_qt <span class="ot">&lt;-</span> <span class="fu">read_xlsx</span>(<span class="st">&quot;us_macro_quarterly.xlsx&quot;</span>, <span class="at">sheet =</span> <span class="dv">1</span>, <span class="at">col_types =</span> <span class="fu">c</span>(<span class="st">&quot;text&quot;</span>, <span class="fu">rep</span>(<span class="st">&quot;numeric&quot;</span>, <span class="dv">9</span>)))</span></code></pre></div>
+<pre><code>## New names:
+## * `` -&gt; ...1</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fix format of date</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>usmac_qt<span class="sc">$</span>...<span class="dv">1</span> <span class="ot">&lt;-</span> <span class="fu">as.yearqtr</span>(usmac_qt<span class="sc">$</span>...<span class="dv">1</span>, <span class="at">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Relabel column names in dataframe</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(usmac_qt) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Date&quot;</span>, <span class="st">&quot;GDPC96&quot;</span>, <span class="st">&quot;JAPAN_IP&quot;</span>, <span class="st">&quot;PCECTPI&quot;</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;GS10&quot;</span>, <span class="st">&quot;GS1&quot;</span>, <span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;UNRATE&quot;</span>, <span class="st">&quot;EXUSUK&quot;</span>, <span class="st">&quot;CPIAUCSL&quot;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># GDP series as xts object</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>GDP <span class="ot">&lt;-</span> <span class="fu">xts</span>(usmac_qt<span class="sc">$</span>GDPC96, usmac_qt<span class="sc">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># GDP growth series as xts object</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>GDPGrowth <span class="ot">&lt;-</span> <span class="fu">xts</span>(<span class="dv">400</span> <span class="sc">*</span> <span class="fu">log</span>(GDP<span class="sc">/</span><span class="fu">lag</span>(GDP)))</span></code></pre></div>
+</section>
+<section id="us-quarterly-gdp-1" class="slide level2">
+<h2>US quarterly GDP</h2>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-3-1.png" width="70%" /></p>
+</section>
+<section id="us-quarterly-gdp-growth-rate" class="slide level2">
+<h2>US quarterly GDP growth rate</h2>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-4-1.png" width="70%" /></p>
+</section></section>
+<section>
+<section id="autocovariance" class="title-slide slide level1">
+<h1>Autocovariance</h1>
+
+</section>
+<section id="population-autocovariances" class="slide level2">
+<h2>Population autocovariances</h2>
+<ul>
+<li><p>Autocovariance is the covariance b/w a random variable <span class="math inline">\(Y\)</span> in two periods</p></li>
+<li><p>The 1st autocovariance of <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(\mathrm{cov}(Y_{t},Y_{t-1})\)</span>; the <span class="math inline">\(j\)</span>th autocovariance is <span class="math inline">\(\mathrm{cov}(Y_{t},Y_{t-j})\)</span></p></li>
+<li><p>The <span class="math inline">\(j\)</span>th autocorrelationis <span class="math inline">\(\rho_j = \frac{\mathrm{cov}(Y_{t},Y_{t-j})}{\sqrt{\mathrm{var}(Y_{t})}\sqrt{\mathrm{var}(Y_{t-j})}}\)</span></p></li>
+<li><p>Autocorrelations also called serial correlations</p></li>
+<li><p>We refer to <span class="math inline">\(\mathrm{cov}(Y_{t},Y_{t-j})\)</span> and <span class="math inline">\(\rho_j\)</span> as a function of lag lenght <span class="math inline">\(j\)</span> as autocovariance and autocorrelation functions</p></li>
+</ul>
+</section>
+<section id="sample-autocovariances" class="slide level2">
+<h2>Sample autocovariances</h2>
+<!-- - The population autocovariances are unknown but can be estimated from times series data -->
+<ul>
+<li><p>The analogue principle suggests the following estimators have good statistical properties:</p>
+<p><span class="math display">\[\widehat{\mathrm{Cov}(Y_t,Y_{t-j})} = \frac{1}{T} \sum_{t=j+1}^T (Y_t - \overline{Y}_{j+1:T})(Y_{t-j}-\overline{Y}_{1:T-j})\]</span></p>
+<p><span class="math display">\[\widehat{\rho}_j = \widehat{\mathrm{Cov}(Y_t,Y_{t-j})}/\widehat{\mathrm{Var}(Y_t)}\]</span></p>
+<p>where <span class="math inline">\(\overline{Y}_{j+1:T}\)</span> is sample average of <span class="math inline">\(Y\)</span> from observations <span class="math inline">\(t = j+1,\ldots,T\)</span>; <span class="math inline">\(\widehat{\mathrm{Var}(Y_t)}\)</span> is sample variance of <span class="math inline">\(Y\)</span></p></li>
+</ul>
+</section>
+<section id="the-autocovariance-function-in-r" class="slide level2">
+<h2>The autocovariance function in R</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of US quarterly GDP</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(<span class="fu">log</span>(GDP)), <span class="at">lag.max =</span> <span class="dv">8</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<pre><code>## 
+## Autocorrelations of series &#39;na.omit(log(GDP))&#39;, by lag
+## 
+##  0.00  0.25  0.50  0.75  1.00  1.25  1.50  1.75  2.00 
+## 1.000 0.986 0.972 0.958 0.944 0.929 0.914 0.900 0.886</code></pre>
+</section>
+<section id="the-autocovariance-function-plot-in-r" class="slide level2">
+<h2>The autocovariance function plot in R</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of US quarterly GDP</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(<span class="fu">log</span>(GDP)), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="70%" /></p>
+</section>
+<section id="the-autocovariance-function-plot-in-r-1" class="slide level2">
+<h2>The autocovariance function plot in R</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of US quarterly GDP</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(GDPGrowth), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-7-1.png" width="70%" /></p>
+</section></section>
+<section>
+<section id="other-economic-time-series" class="title-slide slide level1">
+<h1>Other economic time series</h1>
+
+</section>
+<section id="us-unemployment-rate" class="slide level2">
+<h2>US unemployment rate</h2>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="70%" /></p>
+</section>
+<section id="us-unemployment-rate-acf" class="slide level2">
+<h2>US unemployment rate ACF</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of US quarterly unemployment rate</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(usunemp), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-9-1.png" width="70%" /></p>
+</section>
+<section id="usdgbp-exchange-rate" class="slide level2">
+<h2>USD/GBP exchange rate</h2>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="70%" /></p>
+</section>
+<section id="usdgbp-exchange-rate-acf" class="slide level2">
+<h2>USD/GBP exchange rate ACF</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of USD/GBP exchange rate series</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(dollarpoundFX), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="70%" /></p>
+</section>
+<section id="japanese-industrial-production" class="slide level2">
+<h2>Japanese Industrial Production</h2>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-12-1.png" width="70%" /></p>
+</section>
+<section id="usdgbp-exchange-rate-acf-1" class="slide level2">
+<h2>USD/GBP exchange rate ACF</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of Japanese Industrial Production index series</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(<span class="fu">log</span>(JPindprod)), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-13-1.png" width="70%" /></p>
+</section>
+<section id="ny-stock-exchange-composite-index-daily-changes" class="slide level2">
+<h2>NY Stock Exchange Composite Index (daily changes)</h2>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-14-1.png" width="70%" /></p>
+</section>
+<section id="ny-stock-exchange-composite-index-daily-changes-acf" class="slide level2">
+<h2>NY Stock Exchange Composite Index (daily changes) ACF</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of New York Stock Exchange Composite Index (daily changes) series</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(NYSESW), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-15-1.png" width="70%" /></p>
+</section></section>
+<section>
+<section id="summary" class="title-slide slide level1">
+<h1>Summary</h1>
+
+</section>
+<section id="summary-1" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li><p>Time series data is data collected for a single entity at multiple points in time</p></li>
+<li><p>Time series data differ from cross section data in that observations are correlated</p></li>
+<li><p>The covariance between a variable and its past realizations is called autocovariance</p></li>
+<li><p>The autocovariance of a time series allow us to predict future values from past values</p></li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="index_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="index_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: true,
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'none', // none/fade/slide/convex/concave/zoom
+
+
+
+        chalkboard: {
+        },
+
+        keyboard: {
+          67: function() { RevealChalkboard.toggleNotesCanvas() },    // toggle notes canvas when 'c' is pressed
+          66: function() { RevealChalkboard.toggleChalkboard() }, // toggle chalkboard when 'b' is pressed
+          46: function() { RevealChalkboard.clear() },    // clear chalkboard when 'DEL' is pressed
+           8: function() { RevealChalkboard.reset() },    // reset chalkboard data on current slide when 'BACKSPACE' is pressed
+          68: function() { RevealChalkboard.download() }, // downlad recorded chalkboard drawing when 'd' is pressed
+        },
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'index_files/reveal.js-3.3.0.1/plugin/notes/notes.js', async: true },
+          { src: 'index_files/reveal.js-3.3.0.1/plugin/chalkboard/chalkboard.js', async: true },
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>

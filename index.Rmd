@@ -1,0 +1,295 @@
+---
+pagetitle: Autocovariance
+output: 
+  revealjs::revealjs_presentation:
+    incremental: false
+    theme: solarized
+    self_contained: false
+    reveal_plugins: ["notes","chalkboard"]
+    # reveal_plugins: ["menu"]
+    highlight: pygments
+    center: true
+    transition: none
+    background_transition: none 
+    reveal_options:
+      # chalkboard:
+      #   theme: whiteboard
+      #   toggleNotesButton: true
+      #   toggleChalkboardButton: true
+      menu:
+        numbers: true
+      slideNumber: true
+      previewLinks: false
+    fig_caption: true
+    pandoc_args:
+    - --indented-code-classes
+    - lineNumbers
+    css: mystyle.css
+    
+--- 
+
+<section>
+
+<h1>Autocovariance</h1>
+
+Based on Stock and Watson, ch. 15
+
+<br>
+
+<h2>[Jesper Bagger](mailto:jesper.bagger@rhul.ac.uk)</h2>
+
+<h3>EC2208 | Royal Holloway | 2021/22</h3>
+
+</section>
+
+```{r results='asis', echo=FALSE, include=FALSE}
+library(AER) # load Applied Econometrics with R library
+library(parameters) # Load parameters library for robust SE computation
+library(quantmod) # Load quantmod library for time series analysis
+library(readxl) # Load readxl to load spreadsheet data
+library(stats) # Load stats to compute acf functions
+data(CASchools) # Load CASchools data
+# Generate a couple of useful variables
+CASchools$STR <- CASchools$students/CASchools$teachers  # Student-teacher ratio
+CASchools$Score <- (CASchools$read + CASchools$math)/2  # Student test score
+CASchools$expenditure <- CASchools$expenditure/1000  # Expenditure per pupil in 1000 dollars
+```
+
+
+<!-- # Prediction -->
+<!-- ## Prediction -->
+<!-- - Cross section data example w/ test scores and class size -->
+<!-- $$Score_i = \beta_0 + \beta_1 STR_i + u_i; \quad i=1,2,\ldots,n$$ -->
+<!-- - OLS is consistent estiamtor of Best Linear Predictor: -->
+<!-- $$\hat{Score} = \hat{\beta}_0 + \hat{\beta}_1 STR$$ -->
+<!-- - Use regression to predict test scores from class sizes -->
+<!-- ## Prediction -->
+<!-- $$Score_i = \underset{\hat{Score}_i}{\underbrace{698.93 -2.28 STR_i}} + -->
+<!-- \hat{u}_i; \quad i = 1,\ldots,n$$ ```{r echo=FALSE, error=FALSE, warning=FALSE, -->
+<!-- out.width = "70%"} lm <- lm(Score ~ STR, data = CASchools) # Scatter plot of -->
+<!-- Score against STR plot(CASchools$STR,CASchools$Score, col = "blue", # Color of -->
+<!-- data points xlab = "Student-teacher ratio",  # Label on x-axis ylab = "Test -->
+<!-- score",   # Label on y-axis xlim = c(10, 30),  # Range of x-axis (from 10 to 30) -->
+<!-- ylim = c(600, 720)) # Range of y-axis (from 600 to 720) # Add sample regression -->
+<!-- function to the plot abline(lm, col = "red", # Make the line red lwd = 3) # Set -->
+<!-- linewidth to 3 ``` -->
+<!-- ## Prediction for $STR = 25$ -->
+<!-- $$\hat{Score}(STR = 25) = 698.93 -2.28 \times 25 = 641.94$$ ```{r echo=FALSE, -->
+<!-- error=FALSE, warning=FALSE, out.width = "70%"} pred.25 <- predict(lm, newdata = -->
+<!-- data.frame("STR" = 25)) # Scatter plot of Score against STR -->
+<!-- plot(CASchools$STR,CASchools$Score, col = "blue", # Color of data points xlab = -->
+<!-- "Student-teacher ratio",  # Label on x-axis ylab = "Test score",   # Label on -->
+<!-- y-axis xlim = c(10, 30),  # Range of x-axis (from 10 to 30) ylim = c(600, 720)) -->
+<!-- # Range of y-axis (from 600 to 720) # Add sample regression function to the plot -->
+<!-- abline(lm, col = "red", # Make the line red lwd = 3) # Set linewidth to 3 # Add -->
+<!-- prediction for STR = 25 to the plot points(25,pred.25, col = "green") # Make the -->
+<!-- point green ``` -->
+<!-- ## Prediction in R -->
+<!-- ```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"} lm <- lm(Score ~ -->
+<!-- STR, data = CASchools) lm predict(lm, newdata = data.frame("STR" = 25)) ``` -->
+<!-- ## Prediction in R -->
+<!-- ```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"} predict(lm, -->
+<!-- newdata = data.frame("STR" = 20)) predict(lm, newdata = data.frame("STR" = 30)) -->
+<!-- ``` -->
+
+# Time series data
+
+## Time series data
+
+- Time series data is data collected for a single entity at multiple points in time
+
+  - Profits of a particular firm
+  - A country's quarterly GDP
+  - A region's monthly unemployment rate
+  - Daily Covid-19 infections
+  
+- Univariate series data on $Y$: $\{Y_t;t=1,2,\ldots,T\}$
+  
+- Time series data can be used for causal analysis (but now, dynamic) and prediction (now called forecasting)
+
+## US quarterly GDP
+
+```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+# load US macroeconomic data
+usmac_qt <- read_xlsx("us_macro_quarterly.xlsx", sheet = 1, col_types = c("text", rep("numeric", 9)))
+# Fix format of date
+usmac_qt$...1 <- as.yearqtr(usmac_qt$...1, format = "%Y:0%q")
+# Relabel column names in dataframe
+colnames(usmac_qt) <- c("Date", "GDPC96", "JAPAN_IP", "PCECTPI", 
+                        "GS10", "GS1", "TB3MS", "UNRATE", "EXUSUK", "CPIAUCSL")
+# GDP series as xts object
+GDP <- xts(usmac_qt$GDPC96, usmac_qt$Date)["1960::2013"]
+# GDP growth series as xts object
+GDPGrowth <- xts(400 * log(GDP/lag(GDP)))
+```
+
+## US quarterly GDP
+
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
+# Plot US quarterly GDP time series
+plot(log(as.zoo(GDP)),
+     col = "blue",
+     lwd = 2,
+     ylab = "Logarithm",
+     xlab = "Date",
+     main = "U.S. Quarterly Real GDP")
+```
+
+## US quarterly GDP growth rate
+
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
+# Plot US quarterly GDP time series
+plot(as.zoo(GDPGrowth),
+     col = "blue",
+     lwd = 2,
+     ylab = "Growth Rates",
+     xlab = "Date",
+     main = "U.S. Quarterly Real GDP Growth Rates")
+```
+
+
+# Autocovariance
+
+## Population autocovariances
+
+- Autocovariance is the covariance b/w a random variable $Y$ in two periods
+
+- The 1st autocovariance of $Y_t$ is $\mathrm{cov}(Y_{t},Y_{t-1})$; the $j$th autocovariance is $\mathrm{cov}(Y_{t},Y_{t-j})$
+
+- The $j$th autocorrelationis $\rho_j = \frac{\mathrm{cov}(Y_{t},Y_{t-j})}{\sqrt{\mathrm{var}(Y_{t})}\sqrt{\mathrm{var}(Y_{t-j})}}$
+
+- Autocorrelations also called serial correlations
+
+- We refer to $\mathrm{cov}(Y_{t},Y_{t-j})$ and $\rho_j$ as a function of lag lenght $j$ as autocovariance and autocorrelation functions
+
+
+## Sample autocovariances
+
+<!-- - The population autocovariances are unknown but can be estimated from times series data -->
+
+- The analogue principle suggests the following estimators have good statistical properties:
+
+  $$\widehat{\mathrm{Cov}(Y_t,Y_{t-j})} = \frac{1}{T} \sum_{t=j+1}^T (Y_t - \overline{Y}_{j+1:T})(Y_{t-j}-\overline{Y}_{1:T-j})$$
+     
+  $$\widehat{\rho}_j = \widehat{\mathrm{Cov}(Y_t,Y_{t-j})}/\widehat{\mathrm{Var}(Y_t)}$$
+  
+  where $\overline{Y}_{j+1:T}$ is sample average of $Y$ from observations $t = j+1,\ldots,T$; $\widehat{\mathrm{Var}(Y_t)}$ is sample variance of $Y$
+  
+  
+## The autocovariance function in R
+
+```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+# ACF of US quarterly GDP
+acf(na.omit(log(GDP)), lag.max = 8, plot = FALSE)
+```
+
+## The autocovariance function plot in R
+
+```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+# ACF of US quarterly GDP
+acf(na.omit(log(GDP)), lag.max = 24, plot = TRUE)
+```
+  
+## The autocovariance function plot in R
+
+```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+# ACF of US quarterly GDP
+acf(na.omit(GDPGrowth), lag.max = 24, plot = TRUE)
+```
+
+# Other economic time series
+
+## US unemployment rate
+
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
+usunemp <- xts(usmac_qt$UNRATE, usmac_qt$Date)["1960::2013"]
+# Plot US quarterly unemployment rate series
+plot(as.zoo(usunemp),
+     col = "blue",
+     lwd = 2,
+     ylab = "Percent",
+     xlab = "Date",
+     main = "US Unemployment Rate")
+```
+
+## US unemployment rate ACF
+
+```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+# ACF of US quarterly unemployment rate
+acf(na.omit(usunemp), lag.max = 24, plot = TRUE)
+```
+
+## USD/GBP exchange rate
+
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
+dollarpoundFX <- xts(usmac_qt$EXUSUK, usmac_qt$Date)["1960::2013"]
+# Plot USD/GBP exchange rate series
+plot(as.zoo(dollarpoundFX),
+     col = "blue",
+     lwd = 2,
+     ylab = "Dollars per Pound",
+     xlab = "Date",
+     main = "USD/GBP Exchange Rate")
+```
+
+## USD/GBP exchange rate ACF
+
+```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+# ACF of USD/GBP exchange rate series
+acf(na.omit(dollarpoundFX), lag.max = 24, plot = TRUE)
+```
+
+
+## Japanese Industrial Production
+
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
+JPindprod <- xts(log(usmac_qt$JAPAN_IP), usmac_qt$Date)["1960::2013"]
+# Plot Japanese Industrial Production index series
+plot(as.zoo(log(JPindprod)),
+     col = "blue",
+     lwd = 2,
+     ylab = "Logarithm",
+     xlab = "Date",
+     main = "Logarithm of Japanese Industrial Production Index")
+```
+
+## USD/GBP exchange rate ACF
+
+```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+# ACF of Japanese Industrial Production index series
+acf(na.omit(log(JPindprod)), lag.max = 24, plot = TRUE)
+```
+
+
+## NY Stock Exchange Composite Index (daily changes)
+
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
+data("NYSESW")  
+NYSESW <- xts(Delt(NYSESW))
+# Plot New York Stock Exchange Composite Index (daily changes) series
+plot(as.zoo(NYSESW),
+     col = "blue",
+     lwd = 2,
+     ylab = "Percent per Day",
+     xlab = "Date",
+     main = "New York Stock Exchange Composite Index (Daily changes)")
+```
+
+## NY Stock Exchange Composite Index (daily changes) ACF
+
+```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+# ACF of New York Stock Exchange Composite Index (daily changes) series
+acf(na.omit(NYSESW), lag.max = 24, plot = TRUE)
+```
+
+# Summary
+
+## Summary
+
+- Time series data is data collected for a single entity at multiple points in time
+
+- Time series data differ from cross section data in that observations are correlated
+
+- The covariance between a variable and its past realizations is called autocovariance
+
+- The autocovariance of a time series allow us to predict future values from past values
