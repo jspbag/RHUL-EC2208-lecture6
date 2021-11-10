@@ -180,21 +180,24 @@ plot(as.zoo(GDPGrowth),
 
 ```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
 # ACF of US quarterly GDP
-acf(na.omit(log(GDP)), lag.max = 8, plot = FALSE)
+acf <- acf(na.omit(log(GDP)), lag.max = 8, plot = FALSE)
+acf
 ```
 
 ## The autocovariance function plot in R
 
-```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
 # ACF of US quarterly GDP
-acf(na.omit(log(GDP)), lag.max = 24, plot = TRUE)
+acf <- acf(na.omit(log(GDP)), lag.max = 24, plot = FALSE)
+plot(acf, main = "log(GDP)")
 ```
   
 ## The autocovariance function plot in R
 
-```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
-# ACF of US quarterly GDP
-acf(na.omit(GDPGrowth), lag.max = 24, plot = TRUE)
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
+# ACF of US quarterly GDP growth
+acf <- acf(na.omit(GDPGrowth), lag.max = 24, plot = FALSE)
+plot(acf, main = "GDP growth")
 ```
 
 # Other economic time series
@@ -214,9 +217,10 @@ plot(as.zoo(usunemp),
 
 ## US unemployment rate ACF
 
-```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
 # ACF of US quarterly unemployment rate
-acf(na.omit(usunemp), lag.max = 24, plot = TRUE)
+acf <- acf(na.omit(usunemp), lag.max = 24, plot = FALSE)
+plot(acf, main = "Unemployment rate")
 ```
 
 ## USD/GBP exchange rate
@@ -234,9 +238,10 @@ plot(as.zoo(dollarpoundFX),
 
 ## USD/GBP exchange rate ACF
 
-```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
 # ACF of USD/GBP exchange rate series
-acf(na.omit(dollarpoundFX), lag.max = 24, plot = TRUE)
+acf <- acf(na.omit(dollarpoundFX), lag.max = 24, plot = FALSE)
+plot(acf, main = "USD/GBP exchange rate")
 ```
 
 
@@ -253,11 +258,12 @@ plot(as.zoo(log(JPindprod)),
      main = "Logarithm of Japanese Industrial Production Index")
 ```
 
-## USD/GBP exchange rate ACF
+## Japanese Industrial Production Index ACF
 
-```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
 # ACF of Japanese Industrial Production index series
-acf(na.omit(log(JPindprod)), lag.max = 24, plot = TRUE)
+acf <- acf(na.omit(log(JPindprod)), lag.max = 24, plot = FALSE)
+plot(acf, main = "JPN Industrial Production")
 ```
 
 
@@ -277,9 +283,10 @@ plot(as.zoo(NYSESW),
 
 ## NY Stock Exchange Composite Index (daily changes) ACF
 
-```{r echo=TRUE, error=FALSE, warning=FALSE, out.width = "70%"}
+```{r echo=FALSE, error=FALSE, warning=FALSE, out.width = "70%"}
 # ACF of New York Stock Exchange Composite Index (daily changes) series
-acf(na.omit(NYSESW), lag.max = 24, plot = TRUE)
+acf <- acf(na.omit(NYSESW), lag.max = 24, plot = FALSE)
+plot(acf, main = "NYSE Composite Index")
 ```
 
 # Summary

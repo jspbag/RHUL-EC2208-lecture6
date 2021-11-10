@@ -639,7 +639,8 @@ EC2208 | Royal Holloway | 2021/22
 <section id="the-autocovariance-function-in-r" class="slide level2">
 <h2>The autocovariance function in R</h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of US quarterly GDP</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(<span class="fu">log</span>(GDP)), <span class="at">lag.max =</span> <span class="dv">8</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>acf <span class="ot">&lt;-</span> <span class="fu">acf</span>(<span class="fu">na.omit</span>(<span class="fu">log</span>(GDP)), <span class="at">lag.max =</span> <span class="dv">8</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>acf</span></code></pre></div>
 <pre><code>## 
 ## Autocorrelations of series &#39;na.omit(log(GDP))&#39;, by lag
 ## 
@@ -648,14 +649,10 @@ EC2208 | Royal Holloway | 2021/22
 </section>
 <section id="the-autocovariance-function-plot-in-r" class="slide level2">
 <h2>The autocovariance function plot in R</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of US quarterly GDP</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(<span class="fu">log</span>(GDP)), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="70%" /></p>
 </section>
 <section id="the-autocovariance-function-plot-in-r-1" class="slide level2">
 <h2>The autocovariance function plot in R</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of US quarterly GDP</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(GDPGrowth), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="index_files/figure-revealjs/unnamed-chunk-7-1.png" width="70%" /></p>
 </section></section>
 <section>
@@ -669,8 +666,6 @@ EC2208 | Royal Holloway | 2021/22
 </section>
 <section id="us-unemployment-rate-acf" class="slide level2">
 <h2>US unemployment rate ACF</h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of US quarterly unemployment rate</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(usunemp), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="index_files/figure-revealjs/unnamed-chunk-9-1.png" width="70%" /></p>
 </section>
 <section id="usdgbp-exchange-rate" class="slide level2">
@@ -679,18 +674,14 @@ EC2208 | Royal Holloway | 2021/22
 </section>
 <section id="usdgbp-exchange-rate-acf" class="slide level2">
 <h2>USD/GBP exchange rate ACF</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of USD/GBP exchange rate series</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(dollarpoundFX), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="70%" /></p>
 </section>
 <section id="japanese-industrial-production" class="slide level2">
 <h2>Japanese Industrial Production</h2>
 <p><img src="index_files/figure-revealjs/unnamed-chunk-12-1.png" width="70%" /></p>
 </section>
-<section id="usdgbp-exchange-rate-acf-1" class="slide level2">
-<h2>USD/GBP exchange rate ACF</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of Japanese Industrial Production index series</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(<span class="fu">log</span>(JPindprod)), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<section id="japanese-industrial-production-index-acf" class="slide level2">
+<h2>Japanese Industrial Production Index ACF</h2>
 <p><img src="index_files/figure-revealjs/unnamed-chunk-13-1.png" width="70%" /></p>
 </section>
 <section id="ny-stock-exchange-composite-index-daily-changes" class="slide level2">
@@ -699,8 +690,6 @@ EC2208 | Royal Holloway | 2021/22
 </section>
 <section id="ny-stock-exchange-composite-index-daily-changes-acf" class="slide level2">
 <h2>NY Stock Exchange Composite Index (daily changes) ACF</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of New York Stock Exchange Composite Index (daily changes) series</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">na.omit</span>(NYSESW), <span class="at">lag.max =</span> <span class="dv">24</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="index_files/figure-revealjs/unnamed-chunk-15-1.png" width="70%" /></p>
 </section></section>
 <section>
